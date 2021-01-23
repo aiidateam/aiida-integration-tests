@@ -1,0 +1,12 @@
+# verdi computer setup -n --config slurm_computer_setup.yml
+label: slurm
+hostname: slurm
+description: connect to slurm container in network
+transport: ssh
+scheduler: slurm
+shebang: "#!/bin/bash"
+work_dir: /home/{username}/workdir
+mpirun_command: "mpirun -np {tot_num_mpiprocs}"
+mpiprocs_per_machine: 1
+prepend_text: ""
+append_text: ""

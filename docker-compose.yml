@@ -1,0 +1,40 @@
+version: '3.4'
+
+services:
+
+  postgres:
+    image: postgres:12.3
+    container_name: aiida-int-postgres
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: password
+    restart: always
+  
+  rmq:
+    image: rabbitmq:3.8.3-management
+    container_name: aiida-int-rmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    restart: always
+
+  slurm:
+    image: xenonmiddleware/slurm:17
+    container_name: aiida-int-slurm
+    restart: always
+
+  aiida:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # branch/commit of aiida-core to checkout
+        checkout: develop
+    container_name: aiida-int-core
+    privileged: true
+    volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    depends_on:
+      - postgres
+      - rmq
+      - slurm

@@ -1,0 +1,6 @@
+# verdi computer configure ssh slurm -n --config slurm_computer_configure.yml
+user: my@email.com
+username: xenon
+look_for_keys: true
+key_policy: AutoAddPolicy
+safe_interval: 5

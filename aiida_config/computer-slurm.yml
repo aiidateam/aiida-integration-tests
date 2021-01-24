@@ -1,4 +1,4 @@
-# verdi computer setup -n --config slurm_computer_setup.yml
+# verdi computer setup -n --config computer-slurm.yml
 label: slurm
 hostname: slurm
 description: connect to slurm container in network
@@ -10,3 +10,9 @@ mpirun_command: "mpirun -np {tot_num_mpiprocs}"
 mpiprocs_per_machine: 1
 prepend_text: ""
 append_text: ""
+
+# verdi computer configure ssh slurm -n --config computer-slurm.yml
+username: xenon
+look_for_keys: true
+key_policy: AutoAddPolicy
+safe_interval: 5

@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: pguser
       POSTGRES_PASSWORD: password
     restart: always
-  
+
   rmq:
     image: rabbitmq:3.8.3-management
     container_name: aiida-int-rmq
@@ -17,6 +17,8 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     restart: always
+    ports:
+    - 15673:15672 # management access via http://localhost:15673/
 
   slurm:
     image: xenonmiddleware/slurm:17

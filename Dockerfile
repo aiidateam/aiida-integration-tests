@@ -44,9 +44,19 @@ RUN cd aiida-core; git checkout $checkout
 
 # pip install requirements
 # note here we assume that ubuntu2004 has python 3.8
-RUN pip install -U pip setuptools wheel
+RUN pip install -U pip setuptools wheel flit
 RUN pip install -r aiida-core/requirements/requirements-py-3.8.txt
 RUN pip install --no-deps -e aiida-core
 
+# Add verdi autocompletion to bash initiation
+RUN echo 'eval "$(/opt/venv/bin/verdi completioncommand)"' >> .bashrc
+
+# Add the aiida-sleep plugin
+COPY aiida-sleep aiida-sleep
+RUN cd aiida-sleep; FLIT_ROOT_INSTALL=1 flit install --symlink; reentry scan
+
 # Add the configuration files to setup aiida
 COPY aiida_config aiida_config
+
+# Add bash history of useful commands
+COPY bash_history .bash_history

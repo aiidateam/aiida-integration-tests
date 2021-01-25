@@ -26,6 +26,18 @@ ef718edadb6e   aiida-int-rmq        56.18%    98.17MiB / 1.942GiB   4.94%     16
 b6840be9fb97   aiida-int-slurm      6.25%     20.26MiB / 1.942GiB   1.02%     414kB / 319kB     5.05MB / 815kB    20
 ```
 
+or log to a CSV file (every `i` seconds):
+
+```console
+$ ./docker_stats.py -o docker-stats.csv -i 1
+```
+
+Then to plot a column (requires pandas+matplotlib):
+
+```console
+$ ./docker_stats.py -o docker-stats.csv -p cpu_percent -e png
+```
+
 You can also access the RabbitMQ management console via http://localhost:15673 (user: guest, password: guest).
 
 Logging into the `aiida-int-core` container, you can then run the configurations to create a profile, connected to the postgres and rabbitmq servers, and computers connected locally and to the slurm server:
@@ -33,16 +45,101 @@ Logging into the `aiida-int-core` container, you can then run the configurations
 ```console
 $ docker exec -it aiida-int-core /bin/bash
 root@xxx:~# aiida_config/run_all.sh
+root@xxx:~# verdi daemon start 2
 ```
 
 This will also create codes (local/slurm) for the included `aiida-sleep` plugin, providing a `SleepCalcJob`,
 that simply runs the Unix `sleep` command, and a `SleepWorkChain` that calls `n` `SleepCalcJob` children.
 
 ```console
-root@xxx:~# aiida-sleep calc -n 1 -t 10
+root@xxx:~# aiida-sleep calc -n 1 -t 10 -p 10000
 uuid: 631e4bb9-748c-4f0e-bc50-e2e791012859 (pk: 119) (aiida.calculations:sleep)
-root@xxx:~# aiida-sleep workchain -nw 1 -nc 10 -t 10
-uuid: 6ba78b23-8069-459e-a2eb-8e867972044b (pk: 124) (aiida.workflows:sleep)
+root@xxx:~# aiida-sleep workchain -nw 1 -nc 10 -t 10 -p 10000
+uuid: 6ba78b23-8069-459e-a2eb-8e867972044b (pk: `orm.Dict`) (aiida.workflows:sleep)
+```
+
+Note `-p 10000` is an input "payload" `orm.Dict` with 10,000 key/values,
+that is written as a JSON file to upload, then parsed to an output `orm.Dict`.
+
+```console
+root@47f1194658ca:~# verdi process show 12
+Property     Value
+-----------  ------------------------------------
+type         SleepWorkChain
+state        Finished [0]
+pk           12
+uuid         cceb3b1a-d696-481a-9f5e-051c715bc50a
+label
+description
+ctime        2021-01-25 07:02:18.447616+00:00
+mtime        2021-01-25 07:05:36.305747+00:00
+computer     [2] slurm
+
+Inputs       PK    Type
+-----------  ----  ------
+calcjob
+    code     2     Code
+    time     8     Int
+    payload  9     Dict
+    fail     10    Bool
+children     11    Int
+
+Outputs         PK    Type
+--------------  ----  ------
+results
+    calcjob_1   260   Bool
+    calcjob_2   262   Bool
+    calcjob_3   412   Bool
+    calcjob_4   423   Bool
+    calcjob_5   266   Bool
+    calcjob_6   273   Bool
+    calcjob_7   429   Bool
+    calcjob_8   279   Bool
+    calcjob_9   281   Bool
+    calcjob_10  293   Bool
+
+Called      PK  Type
+--------  ----  ----------------
+CALL        20  SleepCalculation
+CALL        22  SleepCalculation
+CALL        29  SleepCalculation
+CALL        33  SleepCalculation
+CALL        38  SleepCalculation
+CALL        45  SleepCalculation
+CALL        47  SleepCalculation
+CALL        54  SleepCalculation
+CALL        58  SleepCalculation
+CALL        62  SleepCalculation
+root@47f1194658ca:~# verdi process show 20
+Property     Value
+-----------  ------------------------------------
+type         SleepCalculation
+state        Finished [0]
+pk           20
+uuid         6529a6bf-a256-4a9d-885a-372a19a3228c
+label
+description
+ctime        2021-01-25 07:02:19.196711+00:00
+mtime        2021-01-25 07:03:35.314611+00:00
+computer     [2] slurm
+
+Inputs      PK  Type
+--------  ----  ------
+code         2  Code
+fail        10  Bool
+payload      9  Dict
+time         8  Int
+
+Outputs          PK  Type
+-------------  ----  ----------
+payload         261  Dict
+remote_folder   154  RemoteData
+result          260  Bool
+retrieved       254  FolderData
+
+Caller      PK  Type
+--------  ----  --------------
+CALL        12  SleepWorkChain
 ```
 
 You can also call them from an ipython shell:
@@ -59,3 +156,39 @@ Finally to tear down the network:
 ```console
 $ docker-compose down -v
 ```
+
+## Example
+
+Using aiida-core commit `61e48d7a3dac0bc9956f8ac34b8e3cc19db1fc3e` (Tue Jan 19 21:12:23 2021 +0100)
+
+After starting the containers and 2 AiiDA daemons:
+
+```console
+root@47f1194658ca:~# aiida-sleep workchain -nw 10 -nc 10 -t 10 -p 10000
+uuid: 0e579aec-7659-4182-bb5f-1ef25f7ac975 (pk: 7) (aiida.workflows:sleep)
+uuid: cceb3b1a-d696-481a-9f5e-051c715bc50a (pk: 12) (aiida.workflows:sleep)
+uuid: a3b74c88-a6af-4d5e-9e6b-72dadfc38aa7 (pk: 19) (aiida.workflows:sleep)
+uuid: e00a55d2-b1c6-4390-9cfb-be336d9c33ec (pk: 27) (aiida.workflows:sleep)
+uuid: 50cf69ac-7cb6-49e7-a7f7-ef4500f784f2 (pk: 36) (aiida.workflows:sleep)
+uuid: db333ebe-abdd-4e30-86f4-a86cd3febd9f (pk: 44) (aiida.workflows:sleep)
+uuid: b969dafb-3582-44c7-9742-5688e1c05e81 (pk: 53) (aiida.workflows:sleep)
+uuid: b22bbbe7-ddc5-4cd7-a0e2-83323f9a7158 (pk: 61) (aiida.workflows:sleep)
+uuid: 42baba78-d2d5-4fee-a45c-4b52676e5a1f (pk: 67) (aiida.workflows:sleep)
+uuid: 2ec36a6c-36cc-49d1-9c03-29044a724a4e (pk: 74) (aiida.workflows:sleep)
+root@47f1194658ca:~# verdi process list   
+PK    Created    Process label    Process State    Process status
+----  ---------  ---------------  ---------------  ----------------
+
+Total results: 0
+
+Info: last time an entry changed state: 51s ago (at 07:06:59 on 2021-01-25)
+```
+
+![CPU %](example/stats-cpu_percent.png)
+![Memory](example/stats-mem.png)
+![PIDs](example/stats-pids.png)
+![Network I/O](example/stats-netio.png)
+![Block I/O](example/stats-blockio.png)
+
+RMQ Management
+![RMQ Management](example/rmq-management.png)

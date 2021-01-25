@@ -18,6 +18,3 @@ verdi computer test slurm
 # codes
 verdi code setup -n --config code-local-sleep.yml
 verdi code setup -n --config code-slurm-sleep.yml
-
-# daemon
-verdi daemon start 1

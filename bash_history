@@ -4,4 +4,5 @@ verdi process list -a
 verdi shell
 verdi daemon status
 verdi status
+verdi daemon start 2
 aiida_config/run_all.sh

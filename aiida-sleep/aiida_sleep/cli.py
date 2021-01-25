@@ -38,7 +38,7 @@ def run_calcs_cli(number, code, time, payload, fail, submit):
 
 def run_calc(code="sleep@slurm", time=1, payload=1, fail=False, submit=False):
     """Run the `SleepCalculation`"""
-    from aiida.engine import run_get_node, submit
+    from aiida.engine import run_get_node, submit as submit_func
     from aiida.orm import load_code
 
     builder = load_code(code).get_builder()
@@ -47,7 +47,7 @@ def run_calc(code="sleep@slurm", time=1, payload=1, fail=False, submit=False):
     builder.payload = {f"key_{i}": f"value_{i}" for i in range(payload)}
 
     if submit:
-        node = submit(builder)
+        node = submit_func(builder)
     else:
         node = run_get_node(builder).node
 
@@ -94,7 +94,7 @@ def run_workchain(
     number=1, code="sleep@slurm", time=1, payload=1, fail=False, submit=False
 ):
     """Run the `SleepWorkChain`"""
-    from aiida.engine import run_get_node, submit
+    from aiida.engine import run_get_node, submit as submit_func
     from aiida.orm import load_code
     from aiida.plugins import WorkflowFactory
 
@@ -106,7 +106,7 @@ def run_workchain(
     builder.calcjob.fail = fail
 
     if submit:
-        node = submit(builder)
+        node = submit_func(builder)
     else:
         node = run_get_node(builder).node
 

@@ -161,7 +161,7 @@ $ docker-compose down -v
 
 Using aiida-core commit `61e48d7a3dac0bc9956f8ac34b8e3cc19db1fc3e` (Tue Jan 19 21:12:23 2021 +0100)
 
-After starting the containers and 2 AiiDA daemons:
+After starting the containers and 2 AiiDA daemons, this submits 10 workchains, which each submit 10 calculations to the SLURM server:
 
 ```console
 root@47f1194658ca:~# aiida-sleep workchain -nw 10 -nc 10 -t 10 -p 10000

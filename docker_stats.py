@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """CLI to log docker stats to a CSV file."""
 import argparse
 import datetime

@@ -18,8 +18,15 @@ def main():
     "-p",
     "--payload",
     type=int,
-    default=1,
-    help="The number of attributes for the payload.",
+    default=100,
+    help="The number of attributes for the input payload.",
+)
+@click.option(
+    "-o",
+    "--output",
+    type=int,
+    default=100,
+    help="The number of attributes for the output data.",
 )
 @click.option(
     "-f",
@@ -29,22 +36,26 @@ def main():
 )
 @click.option("-s", "--submit", is_flag=True, help="Submit the calculation (or run).")
 @with_dbenv()
-def run_calcs_cli(number, code, time, payload, fail, submit):
+def run_calcs_cli(number, code, time, payload, fail, output, submit):
     """Run the `SleepCalculation`"""
     for _ in range(number):
-        node = run_calc(code, time, payload, fail, submit)
+        node = run_calc(code, time, payload, output, fail, submit)
         click.echo(str(node))
 
 
-def run_calc(code="sleep@slurm", time=1, payload=1, fail=False, submit=False):
+def run_calc(
+    code="sleep@slurm", time=1, payload=100, output=100, fail=False, submit=False
+):
     """Run the `SleepCalculation`"""
-    from aiida.engine import run_get_node, submit as submit_func
+    from aiida.engine import run_get_node
+    from aiida.engine import submit as submit_func
     from aiida.orm import load_code
 
     builder = load_code(code).get_builder()
     builder.time = time
-    builder.fail = fail
-    builder.payload = {f"key_{i}": f"value_{i}" for i in range(payload)}
+    builder.payload = {f"input_key_{i}": f"value_{i}" for i in range(payload)}
+    builder.metadata.options.fail_calcjob = fail
+    builder.metadata.options.output_size = output
 
     if submit:
         node = submit_func(builder)
@@ -75,26 +86,42 @@ def run_calc(code="sleep@slurm", time=1, payload=1, fail=False, submit=False):
     "-p",
     "--payload",
     type=int,
-    default=1,
-    help="The number of attributes for the payload.",
+    default=100,
+    help="The number of attributes for the input payload.",
+)
+@click.option(
+    "-o",
+    "--output",
+    type=int,
+    default=100,
+    help="The number of attributes for the output data.",
 )
 @click.option(
     "-f", "--fail", is_flag=True, help="Parse calculations with a non-zero exit code."
 )
 @click.option("-s", "--submit", is_flag=True, help="Submit the workchain (or run).")
 @with_dbenv()
-def run_workchains_cli(number_work, number_calc, code, time, payload, fail, submit):
+def run_workchains_cli(
+    number_work, number_calc, code, time, payload, output, fail, submit
+):
     """Run the `SleepWorkChain`"""
     for _ in range(number_work):
-        node = run_workchain(number_calc, code, time, payload, fail, submit)
+        node = run_workchain(number_calc, code, time, payload, output, fail, submit)
         click.echo(str(node))
 
 
 def run_workchain(
-    number=1, code="sleep@slurm", time=1, payload=1, fail=False, submit=False
+    number=1,
+    code="sleep@slurm",
+    time=1,
+    payload=100,
+    output=100,
+    fail=False,
+    submit=False,
 ):
     """Run the `SleepWorkChain`"""
-    from aiida.engine import run_get_node, submit as submit_func
+    from aiida.engine import run_get_node
+    from aiida.engine import submit as submit_func
     from aiida.orm import load_code
     from aiida.plugins import WorkflowFactory
 
@@ -102,8 +129,9 @@ def run_workchain(
     builder.children = number
     builder.calcjob.code = load_code(code)
     builder.calcjob.time = time
-    builder.calcjob.payload = {f"key_{i}": f"value_{i}" for i in range(payload)}
-    builder.calcjob.fail = fail
+    builder.calcjob.payload = {f"input_key_{i}": f"value_{i}" for i in range(payload)}
+    builder.calcjob.metadata.options.fail_calcjob = fail
+    builder.calcjob.metadata.options.output_size = output
 
     if submit:
         node = submit_func(builder)

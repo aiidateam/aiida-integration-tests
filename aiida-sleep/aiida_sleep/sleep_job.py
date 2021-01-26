@@ -40,22 +40,15 @@ class SleepCalculation(CalcJob):
             default=lambda: orm.Dict(dict={}),
             help="A dictionary that will be uploaded and retrieved.",
         )
-        spec.input(
-            "fail",
-            serializer=to_aiida_type,
-            valid_type=orm.Bool,
-            default=lambda: orm.Bool(False),
-            help="Intentionally fail the calculation.",
-        )
         spec.output(
             "result",
             valid_type=orm.Bool,
             help='If the output file contains "success".',
         )
         spec.output(
-            "payload",
+            "data",
             valid_type=orm.Dict,
-            help="The retrieved payload (should be equal to input payload).",
+            help="The output data (with size metadata.options.output_size).",
         )
         # set default options (optional)
         spec.inputs["metadata"]["options"]["parser_name"].default = "sleep"
@@ -70,6 +63,18 @@ class SleepCalculation(CalcJob):
             valid_type=str,
             default="payload.json",
             help="Filename to which the content of the payload JSON is written.",
+        )
+        spec.input(
+            "metadata.options.fail_calcjob",
+            valid_type=bool,
+            default=False,
+            help="Intentionally fail the calculation (with code 410).",
+        )
+        spec.input(
+            "metadata.options.output_size",
+            valid_type=int,
+            default=100,
+            help="The number of attributes for the output data.",
         )
 
         spec.exit_code(
@@ -94,7 +99,7 @@ class SleepCalculation(CalcJob):
         :param folder: a temporary folder on the local file system.
         :returns: the `CalcInfo` instance
         """
-        echo_value = "fail" if self.inputs.fail.value else "success"
+        echo_value = "fail" if self.node.get_option("fail_calcjob") else "success"
         with folder.open(self.options.input_filename, "w", encoding="utf8") as handle:
             handle.write(f"sleep {self.inputs.time.value}\n")
             handle.write(f'echo "{echo_value}"\n')
@@ -135,12 +140,20 @@ class SleepParser(Parser):
             with self.retrieved.open(
                 self.node.get_option("payload_filename"), "r"
             ) as handle:
-                payload = json.load(handle)
+                pass
         except OSError:
             return self.exit_codes.ERROR_READING_PAYLOAD_FILE
 
         self.out("result", orm.Bool(result == "success"))
-        self.out("payload", orm.Dict(dict=payload))
+        self.out(
+            "data",
+            orm.Dict(
+                dict={
+                    f"output_key_{i}": f"value_{i}"
+                    for i in range(self.node.get_option("output_size"))
+                }
+            ),
+        )
 
         if not result == "success":
             return self.exit_codes.ERROR_FAILED_OUTPUT

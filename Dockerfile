@@ -35,16 +35,14 @@ RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# clone aiida-core repository
-RUN git clone https://github.com/aiidateam/aiida_core aiida-core
-
-# checkout particular branch/commit
+# clone aiida-core repository and checkout particular branch/commit
 ARG checkout=develop
+RUN git clone https://github.com/aiidateam/aiida_core aiida-core
 RUN cd aiida-core; git checkout $checkout
 
 # pip install requirements
 # note here we assume that ubuntu2004 has python 3.8
-RUN pip install -U pip setuptools wheel flit
+RUN pip install -U pip setuptools wheel flit; pip install pympler
 RUN pip install -r aiida-core/requirements/requirements-py-3.8.txt
 RUN pip install --no-deps -e aiida-core
 

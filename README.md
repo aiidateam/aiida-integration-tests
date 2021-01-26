@@ -52,14 +52,15 @@ This will also create codes (local/slurm) for the included `aiida-sleep` plugin,
 that simply runs the Unix `sleep` command, and a `SleepWorkChain` that calls `n` `SleepCalcJob` children.
 
 ```console
-root@xxx:~# aiida-sleep calc -n 1 -t 10 -p 10000
+root@xxx:~# aiida-sleep calc -n 1 -t 10 -p 10000 -o 10000
 uuid: 631e4bb9-748c-4f0e-bc50-e2e791012859 (pk: 119) (aiida.calculations:sleep)
-root@xxx:~# aiida-sleep workchain -nw 1 -nc 10 -t 10 -p 10000
+root@xxx:~# aiida-sleep workchain -nw 1 -nc 10 -t 10 -p 10000 -o 10000
 uuid: 6ba78b23-8069-459e-a2eb-8e867972044b (pk: `orm.Dict`) (aiida.workflows:sleep)
 ```
 
 Note `-p 10000` is an input "payload" `orm.Dict` with 10,000 key/values,
-that is written as a JSON file to upload, then parsed to an output `orm.Dict`.
+that is written as a JSON file to upload,
+then the `-p 10000` is a parsed output `orm.Dict` with 10,000 key/values.
 
 ```console
 root@47f1194658ca:~# verdi process show 12
@@ -164,7 +165,7 @@ Using aiida-core commit `61e48d7a3dac0bc9956f8ac34b8e3cc19db1fc3e` (Tue Jan 19 2
 After starting the containers and 2 AiiDA daemons, this submits 10 workchains, which each submit 10 calculations to the SLURM server:
 
 ```console
-root@47f1194658ca:~# aiida-sleep workchain -nw 10 -nc 10 -t 10 -p 10000
+root@47f1194658ca:~# aiida-sleep workchain -nw 10 -nc 10 -t 10 -p 10000 -o 10000
 uuid: 0e579aec-7659-4182-bb5f-1ef25f7ac975 (pk: 7) (aiida.workflows:sleep)
 uuid: cceb3b1a-d696-481a-9f5e-051c715bc50a (pk: 12) (aiida.workflows:sleep)
 uuid: a3b74c88-a6af-4d5e-9e6b-72dadfc38aa7 (pk: 19) (aiida.workflows:sleep)
@@ -175,7 +176,7 @@ uuid: b969dafb-3582-44c7-9742-5688e1c05e81 (pk: 53) (aiida.workflows:sleep)
 uuid: b22bbbe7-ddc5-4cd7-a0e2-83323f9a7158 (pk: 61) (aiida.workflows:sleep)
 uuid: 42baba78-d2d5-4fee-a45c-4b52676e5a1f (pk: 67) (aiida.workflows:sleep)
 uuid: 2ec36a6c-36cc-49d1-9c03-29044a724a4e (pk: 74) (aiida.workflows:sleep)
-root@47f1194658ca:~# verdi process list   
+root@47f1194658ca:~# verdi process list
 PK    Created    Process label    Process State    Process status
 ----  ---------  ---------------  ---------------  ----------------
 

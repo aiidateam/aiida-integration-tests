@@ -37,95 +37,98 @@ $ docker-compose down -v
 ## Running integration tests
 
 ```console
-root@xxx:~# aiida-sleep calc -n 1 -t 10 -p 10000 -o 10000
-uuid: 631e4bb9-748c-4f0e-bc50-e2e791012859 (pk: 119) (aiida.calculations:sleep)
-root@xxx:~# aiida-sleep workchain -nw 1 -nc 10 -t 10 -p 10000 -o 10000
-uuid: 6ba78b23-8069-459e-a2eb-8e867972044b (pk: `orm.Dict`) (aiida.workflows:sleep)
+root@xxx:~# aiida-sleep calc -n 1 -t 10 -p 10000 -o 10000 -a 10000
+setting up and running calculation 1
+uuid: d3dfe5e8-e622-451f-93d3-a6719aa63839 (pk: 56) (aiida.calculations:sleep)
+root@xxx:~# aiida-sleep workchain -nw 1 -nc 10 -t 10 -p 10000 -o 10000 -a 10000
+setting up and running workchain 1
+uuid: 32015a78-3593-4479-8129-36aba1d71a39 (pk: 65) (aiida.workflows:sleep)
 ```
 
-Note `-p 10000` is an input "payload" `orm.Dict` with 10,000 key/values,
-that is written as a JSON file to upload,
-then the `-p 10000` is a parsed output `orm.Dict` with 10,000 key/values.
+Note:
+
+- `-p 10000` is an input "payload" `orm.Dict` with 10,000 key/values,
+that is written as a JSON file to upload
+- `-o 10000` is a parsed output `orm.Dict` with 10,000 key/values.
+- `-a 10000` is a parsed output `orm.ArrayData`, storing `numpy.ones(10000)`.
+- Use either `-c sleep@local` or `-c sleep@slurm` to set the code
+- Use `--submit` to submit the calculation/workchain to the daemon, rather than running directly
 
 ```console
-root@47f1194658ca:~# verdi process show 12
+# verdi process show 56
+Property     Value
+-----------  ------------------------------------
+type         SleepCalculation
+state        Finished [0]
+pk           56
+uuid         d3dfe5e8-e622-451f-93d3-a6719aa63839
+label
+description
+ctime        2021-01-28 15:57:00.187913+00:00
+mtime        2021-01-28 15:57:38.049898+00:00
+computer     [2] slurm
+
+Inputs      PK  Type
+--------  ----  ------
+code         2  Code
+payload     55  Dict
+time        54  Int
+
+Outputs          PK  Type
+-------------  ----  ----------
+out_array        61  ArrayData
+out_dict         60  Dict
+remote_folder    57  RemoteData
+result           59  Bool
+retrieved        58  FolderData
+
+# verdi process show 65
 Property     Value
 -----------  ------------------------------------
 type         SleepWorkChain
 state        Finished [0]
-pk           12
-uuid         cceb3b1a-d696-481a-9f5e-051c715bc50a
+pk           65
+uuid         32015a78-3593-4479-8129-36aba1d71a39
 label
 description
-ctime        2021-01-25 07:02:18.447616+00:00
-mtime        2021-01-25 07:05:36.305747+00:00
+ctime        2021-01-28 15:59:47.348629+00:00
+mtime        2021-01-28 16:00:43.818435+00:00
 computer     [2] slurm
 
 Inputs       PK    Type
 -----------  ----  ------
 calcjob
     code     2     Code
-    time     8     Int
-    payload  9     Dict
-    fail     10    Bool
-children     11    Int
+    time     62    Int
+    payload  63    Dict
+children     64    Int
 
 Outputs         PK    Type
 --------------  ----  ------
 results
-    calcjob_1   260   Bool
-    calcjob_2   262   Bool
-    calcjob_3   412   Bool
-    calcjob_4   423   Bool
-    calcjob_5   266   Bool
-    calcjob_6   273   Bool
-    calcjob_7   429   Bool
-    calcjob_8   279   Bool
-    calcjob_9   281   Bool
-    calcjob_10  293   Bool
+    calcjob_1   96    Bool
+    calcjob_2   99    Bool
+    calcjob_3   102   Bool
+    calcjob_4   105   Bool
+    calcjob_5   108   Bool
+    calcjob_6   111   Bool
+    calcjob_7   114   Bool
+    calcjob_8   117   Bool
+    calcjob_9   120   Bool
+    calcjob_10  123   Bool
 
 Called      PK  Type
 --------  ----  ----------------
-CALL        20  SleepCalculation
-CALL        22  SleepCalculation
-CALL        29  SleepCalculation
-CALL        33  SleepCalculation
-CALL        38  SleepCalculation
-CALL        45  SleepCalculation
-CALL        47  SleepCalculation
-CALL        54  SleepCalculation
-CALL        58  SleepCalculation
-CALL        62  SleepCalculation
-root@47f1194658ca:~# verdi process show 20
-Property     Value
------------  ------------------------------------
-type         SleepCalculation
-state        Finished [0]
-pk           20
-uuid         6529a6bf-a256-4a9d-885a-372a19a3228c
-label
-description
-ctime        2021-01-25 07:02:19.196711+00:00
-mtime        2021-01-25 07:03:35.314611+00:00
-computer     [2] slurm
-
-Inputs      PK  Type
---------  ----  ------
-code         2  Code
-fail        10  Bool
-payload      9  Dict
-time         8  Int
-
-Outputs          PK  Type
--------------  ----  ----------
-payload         261  Dict
-remote_folder   154  RemoteData
-result          260  Bool
-retrieved       254  FolderData
-
-Caller      PK  Type
---------  ----  --------------
-CALL        12  SleepWorkChain
+CALL        66  SleepCalculation
+CALL        67  SleepCalculation
+CALL        68  SleepCalculation
+CALL        69  SleepCalculation
+CALL        70  SleepCalculation
+CALL        71  SleepCalculation
+CALL        72  SleepCalculation
+CALL        73  SleepCalculation
+CALL        74  SleepCalculation
+CALL        75  SleepCalculation
 ```
 
 You can also call them from an ipython shell:

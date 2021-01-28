@@ -7,6 +7,7 @@ from aiida.common.folders import Folder
 from aiida.engine import CalcJob, CalcJobProcessSpec, WorkChain
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.parsers.parser import Parser
+import numpy as np
 
 
 def _time_validator(value, port):
@@ -46,9 +47,14 @@ class SleepCalculation(CalcJob):
             help='If the output file contains "success".',
         )
         spec.output(
-            "data",
+            "out_dict",
             valid_type=orm.Dict,
-            help="The output data (with size metadata.options.output_size).",
+            help="Output Dict (with size metadata.options.output_dict_size).",
+        )
+        spec.output(
+            "out_array",
+            valid_type=orm.ArrayData,
+            help="Output ArrayData (with size metadata.options.output_array_size).",
         )
         # set default options (optional)
         spec.inputs["metadata"]["options"]["parser_name"].default = "sleep"
@@ -71,10 +77,16 @@ class SleepCalculation(CalcJob):
             help="Intentionally fail the calculation (with code 410).",
         )
         spec.input(
-            "metadata.options.output_size",
+            "metadata.options.output_dict_size",
             valid_type=int,
             default=100,
-            help="The number of attributes for the output data.",
+            help="The number of attributes for the output Dict.",
+        )
+        spec.input(
+            "metadata.options.output_array_size",
+            valid_type=int,
+            default=100,
+            help="The size of the numpy array for the output ArrayData.",
         )
 
         spec.exit_code(
@@ -146,14 +158,17 @@ class SleepParser(Parser):
 
         self.out("result", orm.Bool(result == "success"))
         self.out(
-            "data",
+            "out_dict",
             orm.Dict(
                 dict={
                     f"output_key_{i}": f"value_{i}"
-                    for i in range(self.node.get_option("output_size"))
+                    for i in range(self.node.get_option("output_dict_size"))
                 }
             ),
         )
+        array = orm.ArrayData()
+        array.set_array("example", np.ones(self.node.get_option("output_array_size")))
+        self.out("out_array", array)
 
         if not result == "success":
             return self.exit_codes.ERROR_FAILED_OUTPUT

@@ -12,6 +12,9 @@ RUN apt-get update && apt-get install -y \
   python3-distutils \
   python3-venv \
   python3-pip \
+  python3-tk \
+  python3-gdbm \
+  idle3 \
   gcc \
   g++ \
   bzip2 \

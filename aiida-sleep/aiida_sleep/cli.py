@@ -154,7 +154,7 @@ def run_workchains_cli(
     fail,
     submit,
 ):
-    """Run the `SleepWorkChain`"""
+    """Run a set of `SleepWorkChain`s"""
     for i in range(number_work):
         print(f"setting up and {'submitting' if submit else 'running'} workchain {i+1}")
         node = run_workchain(
@@ -184,9 +184,9 @@ def run_workchain(
 
     :param number: Number of children `SleepCalculation`
     :param code: code label
-    :param time: time each `SleepCalculation` runs sleep for (seconds)
-    :param payload: Size of input dict
-    :param output_dict: Size of output dict
+    :param time: seconds for which each `SleepCalculation` runs `sleep`
+    :param payload: number of fields in `payload` input dictionary of CalcJob
+    :param output: number of fields in output dictionary of CalcJob
     :param output_array: Size of output array
     :param fail: Intentionally  fail all `SleepCalculation`
     :param submit: whether to submit to daemon, otherwise run

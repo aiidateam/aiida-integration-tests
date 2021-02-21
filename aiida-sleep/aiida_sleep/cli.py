@@ -12,7 +12,9 @@ def main():
 @click.option(
     "-n", "--number", type=int, default=1, help="The number of calculations to launch."
 )
-@click.option("-c", "--code", default="sleep@slurm", help="The code to run.")
+@click.option(
+    "-c", "--code", default="sleep@slurm", help="The code to run.", show_default=True
+)
 @click.option("-t", "--time", type=int, default=1, help="The time to sleep (seconds).")
 @click.option(
     "-p",
@@ -69,6 +71,7 @@ def run_calc(
     output_array=100,
     fail=False,
     submit=False,
+    trace=False,
 ):
     """Run the `SleepCalculation`
 
@@ -115,7 +118,9 @@ def run_calc(
     default=1,
     help="The number of calculations per workchain.",
 )
-@click.option("-c", "--code", default="sleep@slurm", help="The code to run.")
+@click.option(
+    "-c", "--code", default="sleep@slurm", help="The code to run.", show_default=True
+)
 @click.option("-t", "--time", type=int, default=1, help="The time to sleep (seconds).")
 @click.option(
     "-p",

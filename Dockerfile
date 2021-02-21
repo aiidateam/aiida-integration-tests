@@ -35,8 +35,8 @@ RUN chmod 700 .ssh && \
 RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 
 # set default python as python3 venv
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+RUN python3 -m venv /root/venv
+ENV PATH="/root/venv/bin:$PATH"
 
 # clone aiida-core repository and checkout particular branch/commit
 ARG checkout=develop
@@ -50,7 +50,7 @@ RUN pip install -r aiida-core/requirements/requirements-py-3.8.txt
 RUN pip install --no-deps -e aiida-core
 
 # Add verdi autocompletion to bash initiation
-RUN echo 'eval "$(/opt/venv/bin/verdi completioncommand)"' >> .bashrc
+RUN echo 'eval "$(/root/venv/bin/verdi completioncommand)"' >> .bashrc
 
 # Add the aiida-sleep plugin
 COPY aiida-sleep aiida-sleep

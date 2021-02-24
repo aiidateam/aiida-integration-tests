@@ -4,6 +4,10 @@ A repository for creating a reproducible AiiDA system, primarily for testing int
 
 ## Setup
 
+Simply clone this repository and run Docker Compose.
+
+Before running Docker, it is advised to modify `docker-compose.yml`, by replacing `checkout: "develop"` with a specific commit from <https://github.com/aiidateam/aiida-core/commits/develop>.
+
 ```console
 $ docker-compose up --build -d
 ```
@@ -16,6 +20,8 @@ Will start-up a network with four containers:
 - `aiida-int-core`: The AiiDA control node
   - By default, it will install the latest `develop` branch from the aiida-core Github repository.
     In order to select a specific tag or commit, edit the `config` variable in `docker-compose.yml`
+
+You can interact with the containers via the terminal or also [attach VS Code](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker).
 
 Logging into the `aiida-int-core` container, you can then run the configurations to create a profile, connected to the postgres and rabbitmq servers, and computers connected locally and to the slurm server:
 

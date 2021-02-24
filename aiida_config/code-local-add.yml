@@ -1,0 +1,8 @@
+label: add
+description: local ArithmeticAddCalculation
+input_plugin: arithmetic.add
+computer: local
+on_computer: true
+remote_abs_path: /bin/bash
+prepend_text: ""
+append_text: ""

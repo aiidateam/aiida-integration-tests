@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile
       args:
         # branch/commit of aiida-core to checkout
-        checkout: "develop"  # CHANGE TO A SPECIFIC COMMIT
+        checkout: "max-recusion-limit"  # CHANGE TO A SPECIFIC COMMIT
     container_name: aiida-int-core
     privileged: true
     volumes:

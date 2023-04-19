@@ -8,7 +8,7 @@ from aiida.engine import CalcJob, CalcJobProcessSpec, WorkChain
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.parsers.parser import Parser
 import numpy as np
-
+import sys
 
 def _time_validator(value, port):
     if value < 0:
@@ -207,6 +207,7 @@ class SleepWorkChain(WorkChain):
 
     def run_calcjobs(self):
         """Run a number of calcjobs."""
+        self.report(f"the recusion depth is {sys.getrecursionlimit()}")
         for idx in range(self.inputs.children.value):
             future = self.submit(
                 SleepCalculation,

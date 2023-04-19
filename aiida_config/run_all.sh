@@ -9,13 +9,13 @@ verdi status
 
 # computers
 verdi computer setup -n --config computer-local.yml
-verdi computer configure local local -n --config computer-local.yml
+verdi computer configure core.local local -n --config computer-configure-local.yml
 verdi computer test local
 verdi computer setup -n --config computer-slurm.yml
-verdi computer configure ssh slurm -n --config computer-slurm.yml
+verdi computer configure core.ssh slurm -n --config computer-configure-slurm.yml
 verdi computer test slurm
 
 # codes
-verdi code setup -n --config code-local-sleep.yml
-verdi code setup -n --config code-slurm-sleep.yml
-verdi code setup -n --config code-local-add.yml
+verdi code create core.code.installed -n --config code-local-sleep.yml
+verdi code create core.code.installed -n --config code-slurm-sleep.yml
+verdi code create core.code.installed -n --config code-local-add.yml

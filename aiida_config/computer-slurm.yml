@@ -2,17 +2,11 @@
 label: slurm
 hostname: slurm
 description: connect to slurm container in network
-transport: ssh
-scheduler: slurm
+transport: core.ssh
+scheduler: core.slurm
 shebang: "#!/bin/bash"
 work_dir: /home/{username}/workdir
 mpirun_command: "mpirun -np {tot_num_mpiprocs}"
 mpiprocs_per_machine: 1
 prepend_text: ""
 append_text: ""
-
-# verdi computer configure ssh slurm -n --config computer-slurm.yml
-username: xenon
-look_for_keys: true
-key_policy: AutoAddPolicy
-safe_interval: 5

@@ -1,8 +1,7 @@
 label: sleep
 description: local sleep calculation
-input_plugin: sleep
+default_calc_job_plugin: sleep
 computer: slurm
-on_computer: true
-remote_abs_path: /bin/bash
+filepath_executable: /bin/bash
 prepend_text: ""
 append_text: ""

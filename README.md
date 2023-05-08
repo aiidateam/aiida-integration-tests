@@ -9,7 +9,7 @@ Simply clone this repository and run Docker Compose.
 Before running Docker, it is advised to modify `docker-compose.yml`, by replacing `checkout: "develop"` with a specific commit from <https://github.com/aiidateam/aiida-core/commits/develop>.
 
 ```console
-$ docker-compose up --build -d
+$ docker compose up --build -d
 ```
 
 Will start-up a network with four containers:
@@ -37,7 +37,7 @@ that simply runs the Unix `sleep` command, and a `SleepWorkChain` that calls `n`
 You can tear down the network at any point using:
 
 ```console
-$ docker-compose down -v
+$ docker compose down -v
 ```
 
 ## Running integration tests

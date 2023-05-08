@@ -1,0 +1,2 @@
+# verdi computer configure local local -n --config computer-local.yml
+safe_interval: 5
